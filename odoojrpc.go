@@ -106,6 +106,12 @@ func (o *Odoo) JSONRPC(params map[string]interface{}) (out interface{}, err erro
 
 // Login connects to server
 func (o *Odoo) Login() (err error) {
+	if o.URL == "" {
+		err = o.Init()
+		if err != nil {
+			return
+		}
+	}
 	v, err := o.Call("common", "login", o.Database, o.Username, o.Password)
 	if err != nil {
 		return fmt.Errorf("login error: %w", err)
