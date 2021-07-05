@@ -24,6 +24,8 @@ type Odoo struct {
 	uid      int
 }
 
+type FilterArg []interface{}
+
 var (
 	// ErrLogin error on login failure
 	ErrLogin   = errors.New("login failed")
@@ -150,7 +152,7 @@ func (o *Odoo) Create(model string, record map[string]interface{}) (out int, err
 }
 
 // SearchRead records
-func (o *Odoo) SearchRead(model string, filter [][]interface{}, offset int, limit int, fields []string) []map[string]interface{} {
+func (o *Odoo) SearchRead(model string, filter FilterArg, offset int, limit int, fields []string) []map[string]interface{} {
 	var dd []map[string]interface{}
 	vv, err := o.Call("object", "execute", o.Database, o.uid, o.Password, model, "search_read", filter, fields, offset, limit)
 	if err != nil {
@@ -168,7 +170,7 @@ func (o *Odoo) SearchRead(model string, filter [][]interface{}, offset int, limi
 }
 
 // Search record
-func (o *Odoo) Search(model string, filter [][]interface{}) (oo []int) {
+func (o *Odoo) Search(model string, filter FilterArg) (oo []int) {
 	v, err := o.Call("object", "execute", o.Database, o.uid, o.Password, model, "search", filter)
 	if err != nil {
 		log.Println(err)
@@ -182,7 +184,7 @@ func (o *Odoo) Search(model string, filter [][]interface{}) (oo []int) {
 }
 
 // GetID record
-func (o *Odoo) GetID(model string, filter [][]interface{}) (out int) {
+func (o *Odoo) GetID(model string, filter FilterArg) (out int) {
 	out = -1
 	v, err := o.Call("object", "execute", o.Database, o.uid, o.Password, model, "search", filter)
 	if err != nil {
@@ -251,9 +253,9 @@ func (o *Odoo) Unlink(model string, recordIDs []int) (out bool, err error) {
 }
 
 // Count record
-func (o *Odoo) Count(model string, filter [][]interface{}) (out int) {
+func (o *Odoo) Count(model string, filter FilterArg) (out int) {
 	if len(filter) == 0 {
-		filter = [][]interface{}{{"id", "!=", "-1"}}
+		filter = []interface{}{FilterArg{"id", "!=", "-1"}}
 	}
 	v, err := o.Call("object", "execute", o.Database, o.uid, o.Password, model, "search_count", filter)
 	if err != nil {
@@ -271,25 +273,25 @@ func (o *Odoo) Count(model string, filter [][]interface{}) (out int) {
 
 // CompanyID record
 func (o *Odoo) CompanyID(companyName string) int {
-	return o.GetID("res.company", [][]interface{}{{"name", "=", companyName}})
+	return o.GetID("res.company", []interface{}{FilterArg{"name", "=", companyName}})
 }
 
 // PartnerID record
 func (o *Odoo) PartnerID(partnerName string) int {
-	return o.GetID("res.partner", [][]interface{}{{"name", "=", partnerName}})
+	return o.GetID("res.partner", []interface{}{FilterArg{"name", "=", partnerName}})
 }
 
 // CountryID record
 func (o *Odoo) CountryID(countryName string) int {
-	return o.GetID("res.country", [][]interface{}{{"name", "=", countryName}})
+	return o.GetID("res.country", []interface{}{FilterArg{"name", "=", countryName}})
 }
 
 // StateID record
 func (o *Odoo) StateID(countryID int, stateName string) int {
-	return o.GetID("res.country.state", [][]interface{}{{"name", "=", stateName}, {"country_id", "=", countryID}})
+	return o.GetID("res.country.state", []interface{}{FilterArg{"name", "=", stateName}, FilterArg{"country_id", "=", countryID}})
 }
 
 // FiscalPosition record
 func (o *Odoo) FiscalPosition(countryID int, fiscalName string) int {
-	return o.GetID("account.fiscal.position", [][]interface{}{{"country_id", "=", countryID}, {"name", "=", fiscalName}})
+	return o.GetID("account.fiscal.position", []interface{}{FilterArg{"country_id", "=", countryID}, FilterArg{"name", "=", fiscalName}})
 }
