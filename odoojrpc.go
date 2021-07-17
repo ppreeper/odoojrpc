@@ -158,12 +158,10 @@ func (o *Odoo) SearchRead(model string, filter FilterArg, offset int, limit int,
 	if err != nil {
 		log.Println(err)
 	}
-	if vv != nil {
-		switch vv.(type) {
-		case []interface{}:
-			for _, v := range vv.([]interface{}) {
-				dd = append(dd, v.(map[string]interface{}))
-			}
+	switch vv := vv.(type) {
+	case []interface{}:
+		for _, v := range vv {
+			dd = append(dd, v.(map[string]interface{}))
 		}
 	}
 	return dd
@@ -175,8 +173,9 @@ func (o *Odoo) Search(model string, filter FilterArg) (oo []int) {
 	if err != nil {
 		log.Println(err)
 	}
-	if v != nil {
-		for _, v := range v.([]interface{}) {
+	switch v := v.(type) {
+	case []interface{}:
+		for _, v := range v {
 			oo = append(oo, int(v.(float64)))
 		}
 	}
@@ -190,9 +189,10 @@ func (o *Odoo) GetID(model string, filter FilterArg) (out int) {
 	if err != nil {
 		log.Println(err)
 	}
-	if v != nil {
+	switch v := v.(type) {
+	case []interface{}:
 		dd := []int{}
-		for _, v := range v.([]interface{}) {
+		for _, v := range v {
 			dd = append(dd, int(v.(float64)))
 		}
 		if len(dd) > 0 {
@@ -209,8 +209,11 @@ func (o *Odoo) Read(model string, ids []int, fields []string) []map[string]inter
 		log.Println(err)
 	}
 	var dd []map[string]interface{}
-	for _, v := range v.([]interface{}) {
-		dd = append(dd, v.(map[string]interface{}))
+	switch v := v.(type) {
+	case []interface{}:
+		for _, v := range v {
+			dd = append(dd, v.(map[string]interface{}))
+		}
 	}
 	return dd
 }
@@ -244,9 +247,10 @@ func (o *Odoo) Unlink(model string, recordIDs []int) (out bool, err error) {
 	if err != nil {
 		log.Println(err)
 	}
-	if v != nil {
-		out = v.(bool)
-	} else {
+	switch v := v.(type) {
+	case bool:
+		out = v
+	default:
 		out = false
 	}
 	return
@@ -261,9 +265,10 @@ func (o *Odoo) Count(model string, filter FilterArg) (out int) {
 	if err != nil {
 		log.Println(err)
 	}
-	if v != nil {
-		out = int(v.(float64))
-	} else {
+	switch v := v.(type) {
+	case float64:
+		out = int(v)
+	default:
 		out = -1
 	}
 	return
