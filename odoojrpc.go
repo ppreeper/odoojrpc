@@ -298,5 +298,5 @@ func (o *Odoo) StateID(countryID int, stateName string) int {
 
 // FiscalPosition record
 func (o *Odoo) FiscalPosition(countryID int, fiscalName string) int {
-	return o.GetID("account.fiscal.position", []interface{}{FilterArg{"country_id", "=", countryID}, FilterArg{"name", "=", fiscalName}})
+	return o.GetID("account.fiscal.position", []interface{}{FilterArg{"country_id", "=", countryID}, FilterArg{"name", "like", fiscalName}})
 }
