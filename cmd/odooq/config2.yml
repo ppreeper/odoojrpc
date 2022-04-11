@@ -1,0 +1,8 @@
+hostname: odoo2
+database: odoo2
+username: admin
+password: admin
+protocol: jsonrpc
+schema: https
+port: 443
+workers: 2
