@@ -1,5 +1,5 @@
-hostname: odoo2
-database: odoo2
+hostname: odoo
+database: odoo
 username: admin
 password: admin
 protocol: jsonrpc

@@ -1,8 +1,0 @@
-hostname: odoocrm.arthomson.com
-database: odoocrm
-username: artg@arthomson.com
-password: G0tAdmin
-protocol: jsonrpc
-schema: https
-port: 443
-workers: 2
