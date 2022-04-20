@@ -20,7 +20,7 @@ var Export = cli.Command{
 		&cli.StringFlag{Name: "domain", Aliases: []string{"d"}, Destination: &Domain, Usage: "filter `DOMAIN`"},
 		&cli.IntFlag{Name: "offset", Aliases: []string{"o"}, Destination: &RecordOffset, Value: 0, Usage: "offset `OFFSET` records from beginning"},
 		&cli.IntFlag{Name: "limit", Aliases: []string{"l"}, Destination: &RecordLimit, Value: 0, Usage: "limit `LIMIT` records returned"},
-		&cli.StringFlag{Name: "file", Destination: &DataFile, Usage: "export file `FILE`", Required: true},
+		&cli.StringFlag{Name: "file", Destination: &DataFile, Usage: "export file `FILE`, if blank uses `MODEL` as basename"},
 		&cli.StringFlag{Name: "separator", Aliases: []string{"s"}, Value: ";", Destination: &FileSep, Usage: "CSV separator"},
 	},
 	Action: func(c *cli.Context) error {
