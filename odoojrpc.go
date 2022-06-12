@@ -151,6 +151,26 @@ func (o *Odoo) Create(model string, record map[string]interface{}) (out int, err
 	return
 }
 
+// Load record
+func (o *Odoo) Load(model string, header []string, records []interface{}) (out int, err error) {
+	v, err := o.Call("object", "execute", o.Database, o.uid, o.Password, model, "load", header, records)
+	if err != nil {
+		return -1, err
+	}
+	switch v := v.(type) {
+	case float64:
+		out = int(v)
+	case map[string]interface{}:
+		if v["message"] != nil {
+			err = fmt.Errorf("create record error model: %s ids %v message %v",model,v["ids"],v["message"])
+		}
+		out = 0
+	default:
+		out = -1
+	}
+	return
+}
+
 // SearchRead records
 func (o *Odoo) SearchRead(model string, filter FilterArg, offset int, limit int, fields []string) []map[string]interface{} {
 	var dd []map[string]interface{}
