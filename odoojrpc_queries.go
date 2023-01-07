@@ -1,6 +1,22 @@
 package odoojrpc
 
+import "strings"
+
 // Common Odoo Queries
+func (o *Odoo) ModelMap(model string, field string) map[string]int {
+	ids := map[string]int{}
+	rr := o.SearchRead(strings.Replace(model, "_", ".", -1), FilterArg{}, 0, 0, []string{field})
+	for _, r := range rr {
+		switch k := r[field].(type) {
+		case string:
+			switch v := r["id"].(type) {
+			case float64:
+				ids[k] = int(v)
+			}
+		}
+	}
+	return ids
+}
 
 // CompanyID record
 func (o *Odoo) CompanyID(companyName string) int {
