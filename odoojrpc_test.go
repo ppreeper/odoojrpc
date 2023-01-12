@@ -30,7 +30,7 @@ var urlPatterns = []struct {
 }
 
 func TestURL(t *testing.T) {
-	for _, pattern := range urlPatterns {
+	for i, pattern := range urlPatterns {
 		o := Odoo{
 			Hostname: pattern.hostname,
 			Port:     pattern.port,
@@ -40,15 +40,15 @@ func TestURL(t *testing.T) {
 		o.genURL()
 
 		if len(o.URL) != len(pattern.expected) {
-			t.Errorf("\nslice size not equal, expected: %d, got %d", len(pattern.expected), len(o.URL))
-			t.Errorf("\nexpected %s, got %s", pattern.expected, o.URL)
+			t.Errorf("\n[%d]: slice size not equal, expected: %d, got %d", i, len(pattern.expected), len(o.URL))
+			t.Errorf("\n[%d]: expected %s, got %s", i, pattern.expected, o.URL)
 		}
 	}
 
 }
 
 func TestInitError(t *testing.T) {
-	for _, pattern := range urlPatterns {
+	for i, pattern := range urlPatterns {
 		o := new(Odoo)
 		o.Hostname = pattern.hostname
 		o.Port = pattern.port
@@ -56,7 +56,7 @@ func TestInitError(t *testing.T) {
 		err := o.Init()
 		if err != nil {
 			if err.Error() != pattern.expectedError.Error() {
-				t.Errorf("\nexpected %s, got %s", pattern.expectedError, err)
+				t.Errorf("\n[%d]: expected %s, got %s", i, pattern.expectedError, err)
 			}
 		}
 	}
