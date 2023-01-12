@@ -96,8 +96,15 @@ func (o *Odoo) JSONRPC(params map[string]any) (out any, err error) {
 		json.NewDecoder(resp.Body).Decode(&result)
 	}
 
-	if resErr, ok := result["error"]; ok {
-		return resErr, err
+	if _, ok := result["error"]; ok {
+		resError := ""
+		if errorMessage, ok := result["error"].(map[string]any)["message"].(string); ok {
+			resError += errorMessage
+		}
+		if dataMessage, ok := result["error"].(map[string]any)["data"].(map[string]any)["message"].(string); ok {
+			resError += ": " + dataMessage
+		}
+		return resError, err
 	}
 	resVal := result["result"]
 	return resVal, err
@@ -118,8 +125,8 @@ func (o *Odoo) Login() (err error) {
 	switch v := v.(type) {
 	case float64:
 		o.uid = int(v)
-	case any:
-		fmt.Println(v)
+	case string:
+		return fmt.Errorf(v)
 	}
 	return
 }
