@@ -20,11 +20,13 @@ type Odoo struct {
 	Password string `default:"odoo"`
 	Schema   string `default:"http"`
 	URL      string
-	uid      int
+	UID      int
 }
 
-type FilterArg []any
-type oarg = FilterArg
+type (
+	FilterArg []any
+	oarg      = FilterArg
+)
 
 var (
 	// ErrLogin error on login failure
@@ -132,14 +134,14 @@ func (o *Odoo) Login() (err error) {
 	}
 	switch v := v.(type) {
 	case float64:
-		o.uid = int(v)
+		o.UID = int(v)
 	}
 	return nil
 }
 
 // Create record
 func (o *Odoo) Create(model string, record map[string]any) (out int, err error) {
-	v, err := o.Call("object", "execute", o.Database, o.uid, o.Password, model, "create", record)
+	v, err := o.Call("object", "execute", o.Database, o.UID, o.Password, model, "create", record)
 	if err != nil {
 		return -1, err
 	}
@@ -154,7 +156,7 @@ func (o *Odoo) Create(model string, record map[string]any) (out int, err error) 
 
 // Load record
 func (o *Odoo) Load(model string, header []string, records []any) (out int, err error) {
-	v, err := o.Call("object", "execute", o.Database, o.uid, o.Password, model, "load", header, records)
+	v, err := o.Call("object", "execute", o.Database, o.UID, o.Password, model, "load", header, records)
 	if err != nil {
 		return -1, err
 	}
@@ -169,7 +171,7 @@ func (o *Odoo) Load(model string, header []string, records []any) (out int, err 
 
 // SearchRead records
 func (o *Odoo) SearchRead(model string, filter FilterArg, offset int, limit int, fields []string) (oo []map[string]any, err error) {
-	vv, err := o.Call("object", "execute", o.Database, o.uid, o.Password, model, "search_read", filter, fields, offset, limit)
+	vv, err := o.Call("object", "execute", o.Database, o.UID, o.Password, model, "search_read", filter, fields, offset, limit)
 	if err != nil {
 		return oo, err
 	}
@@ -184,7 +186,7 @@ func (o *Odoo) SearchRead(model string, filter FilterArg, offset int, limit int,
 
 // Search record
 func (o *Odoo) Search(model string, filter FilterArg) (oo []int, err error) {
-	v, err := o.Call("object", "execute", o.Database, o.uid, o.Password, model, "search", filter)
+	v, err := o.Call("object", "execute", o.Database, o.UID, o.Password, model, "search", filter)
 	if err != nil {
 		return oo, err
 	}
@@ -200,7 +202,7 @@ func (o *Odoo) Search(model string, filter FilterArg) (oo []int, err error) {
 // GetID record
 func (o *Odoo) GetID(model string, filter FilterArg) (out int, err error) {
 	out = -1
-	v, err := o.Call("object", "execute", o.Database, o.uid, o.Password, model, "search", filter)
+	v, err := o.Call("object", "execute", o.Database, o.UID, o.Password, model, "search", filter)
 	if err != nil {
 		return out, err
 	}
@@ -219,7 +221,7 @@ func (o *Odoo) GetID(model string, filter FilterArg) (out int, err error) {
 
 // Read record
 func (o *Odoo) Read(model string, ids []int, fields []string) (oo []map[string]any, err error) {
-	v, err := o.Call("object", "execute", o.Database, o.uid, o.Password, model, "read", ids, fields)
+	v, err := o.Call("object", "execute", o.Database, o.UID, o.Password, model, "read", ids, fields)
 	if err != nil {
 		return oo, err
 	}
@@ -234,7 +236,7 @@ func (o *Odoo) Read(model string, ids []int, fields []string) (oo []map[string]a
 
 // Update record
 func (o *Odoo) Update(model string, recordID int, record map[string]any) (out bool, err error) {
-	v, err := o.Call("object", "execute", o.Database, o.uid, o.Password, model, "write", recordID, record)
+	v, err := o.Call("object", "execute", o.Database, o.UID, o.Password, model, "write", recordID, record)
 	if err != nil {
 		return false, err
 	}
@@ -249,7 +251,7 @@ func (o *Odoo) Update(model string, recordID int, record map[string]any) (out bo
 
 // Unlink record
 func (o *Odoo) Unlink(model string, recordIDs []int) (out bool, err error) {
-	v, err := o.Call("object", "execute", o.Database, o.uid, o.Password, model, "unlink", recordIDs)
+	v, err := o.Call("object", "execute", o.Database, o.UID, o.Password, model, "unlink", recordIDs)
 	if err != nil {
 		return out, err
 	}
@@ -267,7 +269,7 @@ func (o *Odoo) Count(model string, filter FilterArg) (out int, err error) {
 	if len(filter) == 0 {
 		filter = []any{FilterArg{"id", "!=", "-1"}}
 	}
-	v, err := o.Call("object", "execute", o.Database, o.uid, o.Password, model, "search_count", filter)
+	v, err := o.Call("object", "execute", o.Database, o.UID, o.Password, model, "search_count", filter)
 	if err != nil {
 		return out, err
 	}
