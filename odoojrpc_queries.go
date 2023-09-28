@@ -1,6 +1,8 @@
 package odoojrpc
 
-import "strings"
+import (
+	"strings"
+)
 
 // Common Odoo Queries
 func (o *Odoo) ModelMap(model string, field string) (map[string]int, error) {

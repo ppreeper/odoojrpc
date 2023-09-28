@@ -44,7 +44,6 @@ func TestURL(t *testing.T) {
 			t.Errorf("\n[%d]: expected %s, got %s", i, pattern.expected, o.URL)
 		}
 	}
-
 }
 
 func TestInitError(t *testing.T) {

@@ -24,21 +24,29 @@ var (
 	argCheck      = mTerm + "|" + sTerm
 )
 
-var ac = regexp.MustCompile(argCheck)
-var reSTerm = regexp.MustCompile(sTerm)
-var reMTerm = regexp.MustCompile(mTerm)
+var (
+	ac      = regexp.MustCompile(argCheck)
+	reSTerm = regexp.MustCompile(sTerm)
+	reMTerm = regexp.MustCompile(mTerm)
+)
 
-var reBase = regexp.MustCompile(baseArg)
-var reAddOr = regexp.MustCompile(andorTerms)
-var reNot = regexp.MustCompile(notTerms)
+var (
+	reBase  = regexp.MustCompile(baseArg)
+	reAddOr = regexp.MustCompile(andorTerms)
+	reNot   = regexp.MustCompile(notTerms)
+)
 
-var reAndOrTerm = regexp.MustCompile(`^\s*('&'|'\|')`)
-var reNotTerm = regexp.MustCompile(`^\s*('!')`)
+var (
+	reAndOrTerm = regexp.MustCompile(`^\s*('&'|'\|')`)
+	reNotTerm   = regexp.MustCompile(`^\s*('!')`)
+)
 
 // term searches
-var fieldTerm = regexp.MustCompile(`\(\s*'(\w)+'`)
-var comparatorTerm = regexp.MustCompile(`\s*,'` + comparators + `'\s*,`)
-var valueTerm = regexp.MustCompile(`\s*'(\w|\s)+'\s*\)`)
+var (
+	fieldTerm      = regexp.MustCompile(`\(\s*'(\w)+'`)
+	comparatorTerm = regexp.MustCompile(`\s*,'` + comparators + `'\s*,`)
+	valueTerm      = regexp.MustCompile(`\s*'(\w|\s)+'\s*\)`)
+)
 
 func SearchDomain(domain string) (filter FilterArg, err error) {
 	if domain == "" {
@@ -56,9 +64,9 @@ func SearchDomain(domain string) (filter FilterArg, err error) {
 
 	// multi term
 	if reMTerm.MatchString(domain) {
-		var aa = []StringNode{}
-		var nn = []StringNode{}
-		var bb = []StringNode{}
+		aa := []StringNode{}
+		nn := []StringNode{}
+		bb := []StringNode{}
 
 		for _, v := range reAddOr.FindAllStringIndex(domain, -1) {
 			aa = append(aa, StringNode{Start: v[0], End: v[1]})
