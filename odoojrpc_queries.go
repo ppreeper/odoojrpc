@@ -24,7 +24,7 @@ import (
 // Common Odoo Queries
 func (o *Odoo) ModelMap(model string, field string) (map[string]int, error) {
 	ids := map[string]int{}
-	rr, err := o.SearchRead(strings.Replace(model, "_", ".", -1), FilterArg{}, 0, 0, []string{field})
+	rr, err := o.SearchRead(strings.Replace(model, "_", ".", -1), []any{}, 0, 0, []string{field})
 	if err != nil {
 		return ids, err
 	}
@@ -42,25 +42,25 @@ func (o *Odoo) ModelMap(model string, field string) (map[string]int, error) {
 
 // CompanyID record
 func (o *Odoo) CompanyID(companyName string) (int, error) {
-	return o.GetID("res.company", []any{FilterArg{"name", "=", companyName}})
+	return o.GetID("res.company", []any{[]any{"name", "=", companyName}})
 }
 
 // PartnerID record
 func (o *Odoo) PartnerID(partnerName string) (int, error) {
-	return o.GetID("res.partner", []any{FilterArg{"name", "=", partnerName}})
+	return o.GetID("res.partner", []any{[]any{"name", "=", partnerName}})
 }
 
 // CountryID record
 func (o *Odoo) CountryID(countryName string) (int, error) {
-	return o.GetID("res.country", []any{FilterArg{"name", "=", countryName}})
+	return o.GetID("res.country", []any{[]any{"name", "=", countryName}})
 }
 
 // StateID record
 func (o *Odoo) StateID(countryID int, stateName string) (int, error) {
-	return o.GetID("res.country.state", []any{FilterArg{"name", "=", stateName}, FilterArg{"country_id", "=", countryID}})
+	return o.GetID("res.country.state", []any{[]any{"name", "=", stateName}, []any{"country_id", "=", countryID}})
 }
 
 // FiscalPosition record
 func (o *Odoo) FiscalPosition(countryID int, fiscalName string) (int, error) {
-	return o.GetID("account.fiscal.position", []any{FilterArg{"country_id", "=", countryID}, FilterArg{"name", "like", fiscalName}})
+	return o.GetID("account.fiscal.position", []any{[]any{"country_id", "=", countryID}, []any{"name", "like", fiscalName}})
 }

@@ -24,30 +24,30 @@ import (
 
 var searchDomainPatterns = []struct {
 	domain string
-	args   FilterArg
+	args   []any
 	err    error
 }{
-	{"", FilterArg{}, nil},
-	{"('')", FilterArg{}, errSyntax},
-	{"('','')", FilterArg{}, errSyntax},
-	{"('a','=')", FilterArg{}, errSyntax},
-	{"('name')", FilterArg{}, errSyntax},
-	{"('name','=')", FilterArg{}, errSyntax},
-	{"('name','=','My Name')", FilterArg{FilterArg{"name", "=", "My Name"}}, nil},
-	{"('name','like','My Name')", FilterArg{FilterArg{"name", "like", "My Name"}}, nil},
-	{"('name','=','My Name'),('name','=','My Name')", FilterArg{}, errSyntax},
-	{"[('name','=','My Name')]", FilterArg{FilterArg{"name", "=", "My Name"}}, nil},
-	{"[('name','=','My Name'),('name','=','My Name')]", FilterArg{FilterArg{"name", "=", "My Name"}, FilterArg{"name", "=", "My Name"}}, nil},
-	{"[('name','=','My Name'),'!',('name','=','My Name')]", FilterArg{FilterArg{"name", "=", "My Name"}, FilterArg{"!", FilterArg{"name", "=", "My Name"}}}, nil},
-	{"[('name','=','My Name'),'&',('name','=','My Name'),('name','=','My Name')]", FilterArg{FilterArg{"name", "=", "My Name"}, FilterArg{"&", FilterArg{"name", "=", "My Name"}, FilterArg{"name", "=", "My Name"}}}, nil},
-	{"[('name','=','My Name'),'|',('name','=','My Name'),('name','=','My Name')]", FilterArg{FilterArg{"name", "=", "My Name"}, FilterArg{"|", FilterArg{"name", "=", "My Name"}, FilterArg{"name", "=", "My Name"}}}, nil},
-	{"[('name','=','My Name'),('name','=','My Name'),'!',('name','=','My Name')]", FilterArg{FilterArg{"name", "=", "My Name"}, FilterArg{"name", "=", "My Name"}, FilterArg{"!", FilterArg{"name", "=", "My Name"}}}, nil},
-	{"[('name','=','My Name'),('name','=','My Name'),'&',('name','=','My Name')]", FilterArg{}, errSyntax},
-	{"[('name','=','My Name'),('name','=','My Name'),'&',('name','=','My Name'),('name','=','My Name')]", FilterArg{FilterArg{"name", "=", "My Name"}, FilterArg{"name", "=", "My Name"}, FilterArg{"&", FilterArg{"name", "=", "My Name"}, FilterArg{"name", "=", "My Name"}}}, nil},
-	{"[('name','=','My Name'),('name','=','My Name'),'|',('name','=','My Name')]", FilterArg{}, errSyntax},
-	{"[('name','=','My Name'),('name','=','My Name'),'|',('name','=','My Name'),('name','=','My Name')]", FilterArg{FilterArg{"name", "=", "My Name"}, FilterArg{"name", "=", "My Name"}, FilterArg{"|", FilterArg{"name", "=", "My Name"}, FilterArg{"name", "=", "My Name"}}}, nil},
-	{"[('name','=','My Name'),('name','=','My Name'),'|',('name','=','My Name'),('name','=','My Name'),'!',('name','=','My Name')]", FilterArg{FilterArg{"name", "=", "My Name"}, FilterArg{"name", "=", "My Name"}, FilterArg{"|", FilterArg{"name", "=", "My Name"}, FilterArg{"name", "=", "My Name"}}, FilterArg{"!", FilterArg{"name", "=", "My Name"}}}, nil},
-	{"[('name','=','My Name'),('name','=','My Name'),'|',('name','=','My Name'),('name','=','My Name'),'!',('name','=','My Name'),('name','=','My Name')]", FilterArg{FilterArg{"name", "=", "My Name"}, FilterArg{"name", "=", "My Name"}, FilterArg{"|", FilterArg{"name", "=", "My Name"}, FilterArg{"name", "=", "My Name"}}, FilterArg{"!", FilterArg{"name", "=", "My Name"}}, FilterArg{"name", "=", "My Name"}}, nil},
+	{"", []any{}, nil},
+	{"('')", []any{}, errSyntax},
+	{"('','')", []any{}, errSyntax},
+	{"('a','=')", []any{}, errSyntax},
+	{"('name')", []any{}, errSyntax},
+	{"('name','=')", []any{}, errSyntax},
+	{"('name','=','My Name')", []any{[]any{"name", "=", "My Name"}}, nil},
+	{"('name','like','My Name')", []any{[]any{"name", "like", "My Name"}}, nil},
+	{"('name','=','My Name'),('name','=','My Name')", []any{}, errSyntax},
+	{"[('name','=','My Name')]", []any{[]any{"name", "=", "My Name"}}, nil},
+	{"[('name','=','My Name'),('name','=','My Name')]", []any{[]any{"name", "=", "My Name"}, []any{"name", "=", "My Name"}}, nil},
+	{"[('name','=','My Name'),'!',('name','=','My Name')]", []any{[]any{"name", "=", "My Name"}, []any{"!", []any{"name", "=", "My Name"}}}, nil},
+	{"[('name','=','My Name'),'&',('name','=','My Name'),('name','=','My Name')]", []any{[]any{"name", "=", "My Name"}, []any{"&", []any{"name", "=", "My Name"}, []any{"name", "=", "My Name"}}}, nil},
+	{"[('name','=','My Name'),'|',('name','=','My Name'),('name','=','My Name')]", []any{[]any{"name", "=", "My Name"}, []any{"|", []any{"name", "=", "My Name"}, []any{"name", "=", "My Name"}}}, nil},
+	{"[('name','=','My Name'),('name','=','My Name'),'!',('name','=','My Name')]", []any{[]any{"name", "=", "My Name"}, []any{"name", "=", "My Name"}, []any{"!", []any{"name", "=", "My Name"}}}, nil},
+	{"[('name','=','My Name'),('name','=','My Name'),'&',('name','=','My Name')]", []any{}, errSyntax},
+	{"[('name','=','My Name'),('name','=','My Name'),'&',('name','=','My Name'),('name','=','My Name')]", []any{[]any{"name", "=", "My Name"}, []any{"name", "=", "My Name"}, []any{"&", []any{"name", "=", "My Name"}, []any{"name", "=", "My Name"}}}, nil},
+	{"[('name','=','My Name'),('name','=','My Name'),'|',('name','=','My Name')]", []any{}, errSyntax},
+	{"[('name','=','My Name'),('name','=','My Name'),'|',('name','=','My Name'),('name','=','My Name')]", []any{[]any{"name", "=", "My Name"}, []any{"name", "=", "My Name"}, []any{"|", []any{"name", "=", "My Name"}, []any{"name", "=", "My Name"}}}, nil},
+	{"[('name','=','My Name'),('name','=','My Name'),'|',('name','=','My Name'),('name','=','My Name'),'!',('name','=','My Name')]", []any{[]any{"name", "=", "My Name"}, []any{"name", "=", "My Name"}, []any{"|", []any{"name", "=", "My Name"}, []any{"name", "=", "My Name"}}, []any{"!", []any{"name", "=", "My Name"}}}, nil},
+	{"[('name','=','My Name'),('name','=','My Name'),'|',('name','=','My Name'),('name','=','My Name'),'!',('name','=','My Name'),('name','=','My Name')]", []any{[]any{"name", "=", "My Name"}, []any{"name", "=", "My Name"}, []any{"|", []any{"name", "=", "My Name"}, []any{"name", "=", "My Name"}}, []any{"!", []any{"name", "=", "My Name"}}, []any{"name", "=", "My Name"}}, nil},
 }
 
 func TestSearchDomain(t *testing.T) {

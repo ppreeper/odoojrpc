@@ -40,11 +40,6 @@ type Odoo struct {
 	UID      int
 }
 
-type (
-	FilterArg []any
-	oarg      = FilterArg
-)
-
 var (
 	// ErrLogin error on login failure
 	ErrLogin   = errors.New("login failed")
@@ -187,7 +182,7 @@ func (o *Odoo) Load(model string, header []string, records []any) (out int, err 
 }
 
 // SearchRead records
-func (o *Odoo) SearchRead(model string, filter FilterArg, offset int, limit int, fields []string) (oo []map[string]any, err error) {
+func (o *Odoo) SearchRead(model string, filter []any, offset int, limit int, fields []string) (oo []map[string]any, err error) {
 	vv, err := o.Call("object", "execute", o.Database, o.UID, o.Password, model, "search_read", filter, fields, offset, limit)
 	if err != nil {
 		return oo, err
@@ -202,7 +197,7 @@ func (o *Odoo) SearchRead(model string, filter FilterArg, offset int, limit int,
 }
 
 // Search record
-func (o *Odoo) Search(model string, filter FilterArg) (oo []int, err error) {
+func (o *Odoo) Search(model string, filter []any) (oo []int, err error) {
 	v, err := o.Call("object", "execute", o.Database, o.UID, o.Password, model, "search", filter)
 	if err != nil {
 		return oo, err
@@ -217,7 +212,7 @@ func (o *Odoo) Search(model string, filter FilterArg) (oo []int, err error) {
 }
 
 // GetID record
-func (o *Odoo) GetID(model string, filter FilterArg) (out int, err error) {
+func (o *Odoo) GetID(model string, filter []any) (out int, err error) {
 	out = -1
 	v, err := o.Call("object", "execute", o.Database, o.UID, o.Password, model, "search", filter)
 	if err != nil {
@@ -282,9 +277,9 @@ func (o *Odoo) Unlink(model string, recordIDs []int) (out bool, err error) {
 }
 
 // Count record
-func (o *Odoo) Count(model string, filter FilterArg) (out int, err error) {
+func (o *Odoo) Count(model string, filter []any) (out int, err error) {
 	if len(filter) == 0 {
-		filter = []any{FilterArg{"id", "!=", "-1"}}
+		filter = []any{[]any{"id", "!=", "-1"}}
 	}
 	v, err := o.Call("object", "execute", o.Database, o.UID, o.Password, model, "search_count", filter)
 	if err != nil {

@@ -65,18 +65,18 @@ var (
 	valueTerm      = regexp.MustCompile(`\s*'(\w|\s)+'\s*\)`)
 )
 
-func SearchDomain(domain string) (filter FilterArg, err error) {
+func SearchDomain(domain string) (filter []any, err error) {
 	if domain == "" {
-		return FilterArg{}, nil
+		return []any{}, nil
 	}
 
 	if !ac.MatchString(domain) {
-		return FilterArg{}, errSyntax
+		return []any{}, errSyntax
 	}
 
 	// single term
 	if reSTerm.MatchString(domain) {
-		return FilterArg{patternSplit(domain)}, nil
+		return []any{patternSplit(domain)}, nil
 	}
 
 	// multi term
@@ -138,14 +138,14 @@ func stringSplit(term string, start, end int) string {
 	return string(bStr)
 }
 
-func patternSplit(statement string) FilterArg {
+func patternSplit(statement string) []any {
 	if reAddOr.MatchString(statement) {
 		opCondition := reAndOrTerm.FindAllString(statement, -1)
 		op := termTrimQuote(opCondition[0])
 		terms := reBase.FindAllString(statement, -1)
 		t1 := termSplit(terms[0])
 		t2 := termSplit(terms[1])
-		return FilterArg{op, FilterArg{t1[0], t1[1], t1[2]}, FilterArg{t2[0], t2[1], t2[2]}}
+		return []any{op, []any{t1[0], t1[1], t1[2]}, []any{t2[0], t2[1], t2[2]}}
 	}
 
 	if reNot.MatchString(statement) {
@@ -153,15 +153,15 @@ func patternSplit(statement string) FilterArg {
 		op := termTrimQuote(opCondition[0])
 		terms := reBase.FindAllString(statement, -1)
 		tt := termSplit(terms[0])
-		return FilterArg{op, FilterArg{tt[0], tt[1], tt[2]}}
+		return []any{op, []any{tt[0], tt[1], tt[2]}}
 	}
 
 	if reBase.MatchString(statement) {
 		terms := reBase.FindAllString(statement, -1)
 		tt := termSplit(terms[0])
-		return FilterArg{tt[0], tt[1], tt[2]}
+		return []any{tt[0], tt[1], tt[2]}
 	}
-	return FilterArg{}
+	return []any{}
 }
 
 func termSplit(term string) []string {
