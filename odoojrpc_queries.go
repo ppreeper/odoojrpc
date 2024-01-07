@@ -41,26 +41,26 @@ func (o *Odoo) ModelMap(model string, field string) (map[string]int, error) {
 }
 
 // CompanyID record
-func (o *Odoo) CompanyID(companyName string) (int, error) {
+func (o *Odoo) CompanyID(companyName string) (int, bool, error) {
 	return o.GetID("res.company", []any{[]any{"name", "=", companyName}})
 }
 
 // PartnerID record
-func (o *Odoo) PartnerID(partnerName string) (int, error) {
+func (o *Odoo) PartnerID(partnerName string) (int, bool, error) {
 	return o.GetID("res.partner", []any{[]any{"name", "=", partnerName}})
 }
 
 // CountryID record
-func (o *Odoo) CountryID(countryName string) (int, error) {
+func (o *Odoo) CountryID(countryName string) (int, bool, error) {
 	return o.GetID("res.country", []any{[]any{"name", "=", countryName}})
 }
 
 // StateID record
-func (o *Odoo) StateID(countryID int, stateName string) (int, error) {
+func (o *Odoo) StateID(countryID int, stateName string) (int, bool, error) {
 	return o.GetID("res.country.state", []any{[]any{"name", "=", stateName}, []any{"country_id", "=", countryID}})
 }
 
 // FiscalPosition record
-func (o *Odoo) FiscalPosition(countryID int, fiscalName string) (int, error) {
+func (o *Odoo) FiscalPosition(countryID int, fiscalName string) (int, bool, error) {
 	return o.GetID("account.fiscal.position", []any{[]any{"country_id", "=", countryID}, []any{"name", "like", fiscalName}})
 }

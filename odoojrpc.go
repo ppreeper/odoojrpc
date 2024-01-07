@@ -24,7 +24,6 @@ import (
 	"fmt"
 	"math/rand"
 	"net/http"
-	"time"
 )
 
 // Odoo connection
@@ -40,6 +39,51 @@ type Odoo struct {
 	UID      int
 }
 
+func (o Odoo) WithHostname(hostname string) Odoo {
+	o.Hostname = hostname
+	return o
+}
+
+func (o Odoo) WithPort(port int) Odoo {
+	o.Port = port
+	return o
+}
+
+func (o Odoo) WithDatabase(database string) Odoo {
+	o.Database = database
+	return o
+}
+
+func (o Odoo) WithUsername(username string) Odoo {
+	o.Username = username
+	return o
+}
+
+func (o Odoo) WithPassword(password string) Odoo {
+	o.Password = password
+	return o
+}
+
+func (o Odoo) WithSchema(schema string) Odoo {
+	o.Schema = schema
+	return o
+}
+
+func NewOdoo() *Odoo {
+	return &Odoo{}
+}
+
+func NewOdooWithConfig(hostname string, port int, database string, username string, password string, schema string) *Odoo {
+	return &Odoo{
+		Hostname: hostname,
+		Port:     port,
+		Database: database,
+		Username: username,
+		Password: password,
+		Schema:   schema,
+	}
+}
+
 var (
 	// ErrLogin error on login failure
 	ErrLogin   = errors.New("login failed")
@@ -49,8 +93,7 @@ var (
 )
 
 func (o *Odoo) Init() (err error) {
-	err = o.genURL()
-	if err != nil {
+	if err = o.genURL(); err != nil {
 		return fmt.Errorf("init error: %w", err)
 	}
 	return nil
@@ -91,8 +134,6 @@ func (o *Odoo) Call(service string, method string, args ...any) (res any, err er
 
 // JSONRPC json request
 func (o *Odoo) JSONRPC(params map[string]any) (out any, err error) {
-	rand.Seed(time.Now().UnixNano())
-
 	message := map[string]any{
 		"jsonrpc": "2.0",
 		"method":  "call",
@@ -152,33 +193,33 @@ func (o *Odoo) Login() (err error) {
 }
 
 // Create record
-func (o *Odoo) Create(model string, record map[string]any) (out int, err error) {
+func (o *Odoo) Create(model string, record map[string]any) (row int, res bool, err error) {
 	v, err := o.Call("object", "execute", o.Database, o.UID, o.Password, model, "create", record)
 	if err != nil {
-		return -1, err
+		return -1, false, err
 	}
 	switch v := v.(type) {
 	case float64:
-		out = int(v)
+		row = int(v)
 	default:
-		out = -1
+		row = -1
 	}
-	return out, nil
+	return row, res, nil
 }
 
 // Load record
-func (o *Odoo) Load(model string, header []string, records []any) (out int, err error) {
+func (o *Odoo) Load(model string, header []string, records []any) (row int, res bool, err error) {
 	v, err := o.Call("object", "execute", o.Database, o.UID, o.Password, model, "load", header, records)
 	if err != nil {
-		return -1, err
+		return -1, false, err
 	}
 	switch v := v.(type) {
 	case float64:
-		out = int(v)
+		row = int(v)
 	default:
-		out = -1
+		row = -1
 	}
-	return out, nil
+	return row, res, nil
 }
 
 // SearchRead records
@@ -197,26 +238,26 @@ func (o *Odoo) SearchRead(model string, filter []any, offset int, limit int, fie
 }
 
 // Search record
-func (o *Odoo) Search(model string, filter []any) (oo []int, err error) {
+func (o *Odoo) Search(model string, filter []any) (rows []int, err error) {
 	v, err := o.Call("object", "execute", o.Database, o.UID, o.Password, model, "search", filter)
 	if err != nil {
-		return oo, err
+		return rows, err
 	}
 	switch v := v.(type) {
 	case []any:
 		for _, v := range v {
-			oo = append(oo, int(v.(float64)))
+			rows = append(rows, int(v.(float64)))
 		}
 	}
-	return oo, nil
+	return rows, nil
 }
 
 // GetID record
-func (o *Odoo) GetID(model string, filter []any) (out int, err error) {
+func (o *Odoo) GetID(model string, filter []any) (out int, res bool, err error) {
 	out = -1
 	v, err := o.Call("object", "execute", o.Database, o.UID, o.Password, model, "search", filter)
 	if err != nil {
-		return out, err
+		return out, false, err
 	}
 	switch v := v.(type) {
 	case []any:
@@ -228,7 +269,7 @@ func (o *Odoo) GetID(model string, filter []any) (out int, err error) {
 			out = rr[0]
 		}
 	}
-	return out, nil
+	return out, res, nil
 }
 
 // Read record
@@ -247,49 +288,49 @@ func (o *Odoo) Read(model string, ids []int, fields []string) (oo []map[string]a
 }
 
 // Update record
-func (o *Odoo) Update(model string, recordID int, record map[string]any) (out bool, err error) {
+func (o *Odoo) Update(model string, recordID int, record map[string]any) (row int, res bool, err error) {
 	v, err := o.Call("object", "execute", o.Database, o.UID, o.Password, model, "write", recordID, record)
 	if err != nil {
-		return false, err
+		return recordID, false, err
 	}
 	switch v := v.(type) {
 	case bool:
-		out = v
+		res = v
 	default:
-		out = false
+		res = false
 	}
-	return out, nil
+	return recordID, res, nil
 }
 
 // Unlink record
-func (o *Odoo) Unlink(model string, recordIDs []int) (out bool, err error) {
+func (o *Odoo) Unlink(model string, recordIDs []int) (res bool, err error) {
 	v, err := o.Call("object", "execute", o.Database, o.UID, o.Password, model, "unlink", recordIDs)
 	if err != nil {
-		return out, err
+		return res, err
 	}
 	switch v := v.(type) {
 	case bool:
-		out = v
+		res = v
 	default:
-		out = false
+		res = false
 	}
-	return out, nil
+	return res, nil
 }
 
 // Count record
-func (o *Odoo) Count(model string, filter []any) (out int, err error) {
+func (o *Odoo) Count(model string, filter []any) (count int, err error) {
 	if len(filter) == 0 {
 		filter = []any{[]any{"id", "!=", "-1"}}
 	}
 	v, err := o.Call("object", "execute", o.Database, o.UID, o.Password, model, "search_count", filter)
 	if err != nil {
-		return out, err
+		return count, err
 	}
 	switch v := v.(type) {
 	case float64:
-		out = int(v)
+		count = int(v)
 	default:
-		out = -1
+		count = -1
 	}
-	return out, nil
+	return count, nil
 }
