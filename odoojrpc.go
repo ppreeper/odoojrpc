@@ -133,7 +133,7 @@ func (o *Odoo) Call(service string, method string, args ...any) (res any, err er
 }
 
 // JSONRPC json request
-func (o *Odoo) JSONRPC(params map[string]any) (out any, err error) {
+func (o *Odoo) JSONRPC(params map[string]any) (res any, err error) {
 	message := map[string]any{
 		"jsonrpc": "2.0",
 		"method":  "call",
@@ -169,8 +169,8 @@ func (o *Odoo) JSONRPC(params map[string]any) (out any, err error) {
 		return nil, fmt.Errorf(resultError)
 	}
 
-	out = result["result"]
-	return out, nil
+	res = result["result"]
+	return res, nil
 }
 
 // Login connects to server
@@ -223,18 +223,18 @@ func (o *Odoo) Load(model string, header []string, records []any) (row int, res 
 }
 
 // SearchRead records
-func (o *Odoo) SearchRead(model string, filter []any, offset int, limit int, fields []string) (oo []map[string]any, err error) {
+func (o *Odoo) SearchRead(model string, filter []any, offset int, limit int, fields []string) (recs []map[string]any, err error) {
 	vv, err := o.Call("object", "execute", o.Database, o.UID, o.Password, model, "search_read", filter, fields, offset, limit)
 	if err != nil {
-		return oo, err
+		return recs, err
 	}
 	switch vv := vv.(type) {
 	case []any:
 		for _, v := range vv {
-			oo = append(oo, v.(map[string]any))
+			recs = append(recs, v.(map[string]any))
 		}
 	}
-	return oo, nil
+	return recs, nil
 }
 
 // Search record
@@ -253,11 +253,11 @@ func (o *Odoo) Search(model string, filter []any) (rows []int, err error) {
 }
 
 // GetID record
-func (o *Odoo) GetID(model string, filter []any) (out int, res bool, err error) {
+func (o *Odoo) GetID(model string, filter []any) (out int, err error) {
 	out = -1
 	v, err := o.Call("object", "execute", o.Database, o.UID, o.Password, model, "search", filter)
 	if err != nil {
-		return out, false, err
+		return out, err
 	}
 	switch v := v.(type) {
 	case []any:
@@ -269,22 +269,22 @@ func (o *Odoo) GetID(model string, filter []any) (out int, res bool, err error) 
 			out = rr[0]
 		}
 	}
-	return out, res, nil
+	return out, nil
 }
 
 // Read record
-func (o *Odoo) Read(model string, ids []int, fields []string) (oo []map[string]any, err error) {
+func (o *Odoo) Read(model string, ids []int, fields []string) (recs []map[string]any, err error) {
 	v, err := o.Call("object", "execute", o.Database, o.UID, o.Password, model, "read", ids, fields)
 	if err != nil {
-		return oo, err
+		return recs, err
 	}
 	switch v := v.(type) {
 	case []any:
 		for _, v := range v {
-			oo = append(oo, v.(map[string]any))
+			recs = append(recs, v.(map[string]any))
 		}
 	}
-	return oo, nil
+	return recs, nil
 }
 
 // Update record
