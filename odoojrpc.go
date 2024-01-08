@@ -39,7 +39,7 @@ type Odoo struct {
 	UID      int
 }
 
-func (o Odoo) WithHostname(hostname string) Odoo {
+func (o *Odoo) WithHostname(hostname string) *Odoo {
 	o.Hostname = hostname
 	return o
 }
