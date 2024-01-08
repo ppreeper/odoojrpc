@@ -44,27 +44,27 @@ func (o *Odoo) WithHostname(hostname string) *Odoo {
 	return o
 }
 
-func (o Odoo) WithPort(port int) Odoo {
+func (o *Odoo) WithPort(port int) *Odoo {
 	o.Port = port
 	return o
 }
 
-func (o Odoo) WithDatabase(database string) Odoo {
+func (o *Odoo) WithDatabase(database string) *Odoo {
 	o.Database = database
 	return o
 }
 
-func (o Odoo) WithUsername(username string) Odoo {
+func (o *Odoo) WithUsername(username string) *Odoo {
 	o.Username = username
 	return o
 }
 
-func (o Odoo) WithPassword(password string) Odoo {
+func (o *Odoo) WithPassword(password string) *Odoo {
 	o.Password = password
 	return o
 }
 
-func (o Odoo) WithSchema(schema string) Odoo {
+func (o *Odoo) WithSchema(schema string) *Odoo {
 	o.Schema = schema
 	return o
 }
