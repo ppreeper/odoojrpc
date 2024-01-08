@@ -73,15 +73,8 @@ func NewOdoo() *Odoo {
 	return &Odoo{}
 }
 
-func NewOdooWithConfig(hostname string, port int, database string, username string, password string, schema string) *Odoo {
-	return &Odoo{
-		Hostname: hostname,
-		Port:     port,
-		Database: database,
-		Username: username,
-		Password: password,
-		Schema:   schema,
-	}
+func NewOdooWithConfig(config Odoo) *Odoo {
+	return &config
 }
 
 var (
