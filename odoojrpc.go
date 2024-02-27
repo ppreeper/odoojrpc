@@ -19,11 +19,13 @@ package odoojrpc
 
 import (
 	"bytes"
+	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"math/rand"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -139,9 +141,19 @@ func (o *Odoo) JSONRPC(params map[string]any) (res any, err error) {
 	if err != nil {
 		return nil, fmt.Errorf("json marshall error: %w", err)
 	}
+
+	// TODO: refactor timeout
 	client := &http.Client{
 		Timeout: 5 * time.Second,
 	}
+
+	// TODO: refactor insecure skip verify
+	if o.Schema == "https" && (o.Hostname == "localhost" || strings.HasSuffix(o.Hostname, ".local")) {
+		transCfg := &http.Transport{}
+		transCfg.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+		client.Transport = transCfg
+	}
+
 	resp, err := client.Post(o.URL, "application/json", bytes.NewBuffer(bytesRepresentation))
 	if err != nil {
 		return nil, fmt.Errorf("http post error: %w", err)
