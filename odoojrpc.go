@@ -24,6 +24,7 @@ import (
 	"fmt"
 	"math/rand"
 	"net/http"
+	"time"
 )
 
 // Odoo connection
@@ -138,8 +139,10 @@ func (o *Odoo) JSONRPC(params map[string]any) (res any, err error) {
 	if err != nil {
 		return nil, fmt.Errorf("json marshall error: %w", err)
 	}
-
-	resp, err := http.Post(o.URL, "application/json", bytes.NewBuffer(bytesRepresentation))
+	client := &http.Client{
+		Timeout: 5 * time.Second,
+	}
+	resp, err := client.Post(o.URL, "application/json", bytes.NewBuffer(bytesRepresentation))
 	if err != nil {
 		return nil, fmt.Errorf("http post error: %w", err)
 	}
