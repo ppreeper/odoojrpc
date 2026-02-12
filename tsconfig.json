@@ -5,9 +5,18 @@
     "moduleResolution": "Node",
     "strict": true,
     "declaration": true,
-    "outDir": "dist"
+    "declarationMap": true,
+    "sourceMap": true,
+    "outDir": "dist",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
   },
   "include": [
     "src"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
   ]
 }

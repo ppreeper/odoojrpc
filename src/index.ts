@@ -344,8 +344,9 @@ export class ODOOJSON implements JRPC {
             const result = await response.json();
             return result;
         } catch (error) {
-            console.error("Error fetching data:", error);
-            return {};
+            throw new OdooRPCError(
+                `Create failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+            );
         }
     }
 
@@ -367,8 +368,9 @@ export class ODOOJSON implements JRPC {
             const result = await response.json();
             return result;
         } catch (error) {
-            console.error("Error fetching data:", error);
-            return {};
+            throw new OdooRPCError(
+                `Load failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+            );
         }
     }
 
@@ -390,8 +392,9 @@ export class ODOOJSON implements JRPC {
             const data = await response.json() as { count: number };
             return data.count;
         } catch (error) {
-            console.error("Error fetching data:", error);
-            return 0;
+            throw new OdooRPCError(
+                `Count failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+            );
         }
     }
 
@@ -417,8 +420,9 @@ export class ODOOJSON implements JRPC {
             const data = await response.json();
             return data;
         } catch (error) {
-            console.error("Error fetching data:", error);
-            return {};
+            throw new OdooRPCError(
+                `Fields_get failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+            );
         }
     }
 
@@ -440,8 +444,9 @@ export class ODOOJSON implements JRPC {
             const data = await response.json() as { ids: number[] };
             return data.ids[0] ?? -1;
         } catch (error) {
-            console.error("Error fetching data:", error);
-            return -1;
+            throw new OdooRPCError(
+                `Get_id failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+            );
         }
     }
 
@@ -463,8 +468,9 @@ export class ODOOJSON implements JRPC {
             const data = await response.json() as { ids: number[] };
             return data.ids;
         } catch (error) {
-            console.error("Error fetching data:", error);
-            return [];
+            throw new OdooRPCError(
+                `Search failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+            );
         }
     }
 
@@ -486,8 +492,9 @@ export class ODOOJSON implements JRPC {
             const data = await response.json() as T[];
             return data;
         } catch (error) {
-            console.error("Error fetching data:", error);
-            return [];
+            throw new OdooRPCError(
+                `Read failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+            );
         }
     }
 
@@ -520,8 +527,9 @@ export class ODOOJSON implements JRPC {
             const data = await response.json() as T[];
             return data;
         } catch (error) {
-            console.error("Error fetching data:", error);
-            return [];
+            throw new OdooRPCError(
+                `Search_read failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+            );
         }
     }
 
@@ -543,8 +551,9 @@ export class ODOOJSON implements JRPC {
             const result = await response.json();
             return result;
         } catch (error) {
-            console.error("Error fetching data:", error);
-            return {};
+            throw new OdooRPCError(
+                `Write failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+            );
         }
     }
 
@@ -566,8 +575,9 @@ export class ODOOJSON implements JRPC {
             const result = await response.json();
             return result;
         } catch (error) {
-            console.error("Error fetching data:", error);
-            return {};
+            throw new OdooRPCError(
+                `Unlink failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+            );
         }
     }
 
@@ -589,8 +599,9 @@ export class ODOOJSON implements JRPC {
             const result = await response.json();
             return result;
         } catch (error) {
-            console.error("Error fetching data:", error);
-            return {};
+            throw new OdooRPCError(
+                `Execute failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+            );
         }
     }
 
@@ -612,8 +623,9 @@ export class ODOOJSON implements JRPC {
             const result = await response.json();
             return result;
         } catch (error) {
-            console.error("Error fetching data:", error);
-            return {};
+            throw new OdooRPCError(
+                `Execute_kw failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+            );
         }
     }
 }
