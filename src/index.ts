@@ -730,6 +730,7 @@ export class JRPCStrategyFactory {
 function parseDomainString(input: string): (string | string[])[] {
     // Remove the outer [ and ]
     let cleaned = input.trim();
+    if (cleaned === "") return [];
     if (cleaned.startsWith('[')) cleaned = cleaned.slice(1);
     if (cleaned.endsWith(']')) cleaned = cleaned.slice(0, -1);
 
