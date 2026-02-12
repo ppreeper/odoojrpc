@@ -2,12 +2,12 @@ export interface JRPC {
     login(): Promise<number>
     create(model: string, data: any): Promise<any>
     load(model: string, header: any, values: any): Promise<any>
-    count(model: string, domain?: any[]): Promise<number>
+    count(model: string, domain?: any): Promise<number>
     fields_get(model: string, fields?: string[], field_attributes?: string[]): Promise<any>
-    get_id(model: string, domain?: any[]): Promise<number>
-    search(model: string, domain?: any[]): Promise<number[]>
+    get_id(model: string, domain?: any): Promise<number>
+    search(model: string, domain?: any): Promise<number[]>
     read<T>(model: string, ids: number[], fields?: string[]): Promise<T[]>
-    search_read<T>(model: string, domain?: any[], fields?: string[], offset?: number, limit?: number): Promise<T[]>
+    search_read<T>(model: string, domain?: any, fields?: string[], offset?: number, limit?: number): Promise<T[]>
     write(model: string, id: number | number[], data: any): Promise<any>
     unlink(model: string, ids: number[]): Promise<any>
     execute(model: string, method: string, args: any): Promise<any>
@@ -83,14 +83,14 @@ export class JSONRPC implements JRPC {
         return result;
     }
 
-    async count(model: string, domain?: any[]): Promise<number> {
+    async count(model: string, domain?: any): Promise<number> {
         const [result, error] = await this.Call("object", "execute", [
             this.config.database,
             this.config.uid,
             this.config.password,
             model,
             "search_count",
-            domain ?? []
+            parseDomainString(domain ?? "")
         ]);
 
         if (error) {
@@ -118,14 +118,14 @@ export class JSONRPC implements JRPC {
         return result;
     }
 
-    async get_id(model: string, domain?: any[]): Promise<number> {
+    async get_id(model: string, domain?: any): Promise<number> {
         const [result, error] = await this.Call("object", "execute", [
             this.config.database,
             this.config.uid,
             this.config.password,
             model,
             "search",
-            domain ?? []
+            parseDomainString(domain ?? "")
         ]);
 
         if (error) {
@@ -135,14 +135,14 @@ export class JSONRPC implements JRPC {
         return result[0] || -1;
     }
 
-    async search(model: string, domain?: any[]): Promise<number[]> {
+    async search(model: string, domain?: any): Promise<number[]> {
         const [result, error] = await this.Call("object", "execute", [
             this.config.database,
             this.config.uid,
             this.config.password,
             model,
             "search",
-            domain ?? []
+            parseDomainString(domain ?? "")
         ]);
 
         if (error) {
@@ -172,7 +172,7 @@ export class JSONRPC implements JRPC {
 
     async search_read<T>(
         model: string,
-        domain?: any[],
+        domain?: any,
         fields?: string[],
         offset?: number,
         limit?: number
@@ -183,7 +183,7 @@ export class JSONRPC implements JRPC {
             this.config.password,
             model,
             "search_read",
-            domain ?? [],
+            parseDomainString(domain ?? ""),
             fields ?? [],
             offset ?? 0,
             limit ?? 0
@@ -374,7 +374,7 @@ export class ODOOJSON implements JRPC {
         }
     }
 
-    async count(model: string, domain?: any[]): Promise<number> {
+    async count(model: string, domain?: any): Promise<number> {
         const url = `${this.config.url}${model}/count`;
 
         try {
@@ -384,7 +384,7 @@ export class ODOOJSON implements JRPC {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${this.config.apikey}`,
                 },
-                body: JSON.stringify({ domain: domain }),
+                body: JSON.stringify({ domain: parseDomainString(domain ?? "") }),
             });
 
             if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
@@ -410,8 +410,8 @@ export class ODOOJSON implements JRPC {
                 },
                 body: JSON.stringify({
                     context: {},
-                    allfields: null,
-                    attributes: null,
+                    allfields: fields ? fields : undefined,
+                    attributes: field_attributes ? field_attributes : undefined,
                 }),
             });
 
@@ -426,7 +426,7 @@ export class ODOOJSON implements JRPC {
         }
     }
 
-    async get_id(model: string, domain?: any[]): Promise<number> {
+    async get_id(model: string, domain?: any): Promise<number> {
         const url = `${this.config.url}${model}/search`;
 
         try {
@@ -436,7 +436,7 @@ export class ODOOJSON implements JRPC {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${this.config.apikey}`,
                 },
-                body: JSON.stringify({ domain: domain }),
+                body: JSON.stringify({ domain: parseDomainString(domain ?? "") }),
             });
 
             if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
@@ -450,7 +450,7 @@ export class ODOOJSON implements JRPC {
         }
     }
 
-    async search(model: string, domain?: any[]): Promise<number[]> {
+    async search(model: string, domain?: any): Promise<number[]> {
         const url = `${this.config.url}${model}/search`;
 
         try {
@@ -460,7 +460,7 @@ export class ODOOJSON implements JRPC {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${this.config.apikey}`,
                 },
-                body: JSON.stringify({ domain: domain }),
+                body: JSON.stringify({ domain: parseDomainString(domain ?? "") }),
             });
 
             if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
@@ -500,13 +500,12 @@ export class ODOOJSON implements JRPC {
 
     async search_read<T>(
         model: string,
-        domain?: any[],
+        domain?: any,
         fields?: string[],
         offset?: number,
         limit?: number
     ): Promise<T[]> {
         const url = `${this.config.url}${model}/search_read`;
-
         try {
             const response = await fetch(url, {
                 method: "POST",
@@ -515,7 +514,7 @@ export class ODOOJSON implements JRPC {
                     "Authorization": `Bearer ${this.config.apikey}`,
                 },
                 body: JSON.stringify({
-                    domain: domain,
+                    domain: parseDomainString(domain ?? ""),
                     fields: fields,
                     offset: offset ?? 0,
                     limit: limit ?? 0,
@@ -657,7 +656,7 @@ export class JRPCClient {
         return this.strategy.load(model, header, values);
     }
 
-    async count(model: string, domain?: any[]): Promise<number> {
+    async count(model: string, domain?: any): Promise<number> {
         return this.strategy.count(model, domain);
     }
 
@@ -665,11 +664,11 @@ export class JRPCClient {
         return this.strategy.fields_get(model, fields, field_attributes);
     }
 
-    async get_id(model: string, domain?: any[]): Promise<number> {
+    async get_id(model: string, domain?: any): Promise<number> {
         return this.strategy.get_id(model, domain);
     }
 
-    async search(model: string, domain?: any[]): Promise<number[]> {
+    async search(model: string, domain?: any): Promise<number[]> {
         return this.strategy.search(model, domain);
     }
 
@@ -679,7 +678,7 @@ export class JRPCClient {
 
     async search_read<T>(
         model: string,
-        domain?: any[],
+        domain?: any,
         fields?: string[],
         offset?: number,
         limit?: number
@@ -724,4 +723,40 @@ export class JRPCStrategyFactory {
                 throw new Error(`Unsupported protocol: ${protocol}`);
         }
     }
+}
+
+
+// Protocol-specific extras
+function parseDomainString(input: string): (string | string[])[] {
+    // Remove the outer [ and ]
+    let cleaned = input.trim();
+    if (cleaned.startsWith('[')) cleaned = cleaned.slice(1);
+    if (cleaned.endsWith(']')) cleaned = cleaned.slice(0, -1);
+
+    const result: (string | string[])[] = [];
+
+    // Check if there's an operator at the start (like '|' or '&')
+    const operatorMatch = cleaned.match(/^'([|&])'\s*,\s*/);
+    if (operatorMatch) {
+        result.push(operatorMatch[1]!);
+        // Remove the operator from the string
+        cleaned = cleaned.slice(operatorMatch[0].length);
+    }
+
+    // Split by "),(" to separate each tuple
+    const tuples = cleaned.split('),(');
+
+    tuples.forEach(tuple => {
+        // Remove any remaining parentheses
+        const withoutParens = tuple.replace(/[()]/g, '');
+
+        // Split by comma and clean up quotes/spaces
+        const parsed = withoutParens
+            .split(',')
+            .map(item => item.trim().replace(/^'|'$/g, ''));
+
+        result.push(parsed);
+    });
+
+    return result;
 }
