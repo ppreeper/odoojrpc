@@ -2,12 +2,12 @@ export interface JRPC {
     login(): Promise<number>
     create(model: string, data: any): Promise<any>
     load(model: string, header: any, values: any): Promise<any>
-    count(model: string, domain?: any): Promise<number>
+    count(model: string, domain?: string): Promise<number>
     fields_get(model: string, fields?: string[], field_attributes?: string[]): Promise<any>
-    get_id(model: string, domain?: any): Promise<number>
-    search(model: string, domain?: any): Promise<number[]>
+    get_id(model: string, domain?: string): Promise<number>
+    search(model: string, domain?: string): Promise<number[]>
     read<T>(model: string, ids: number[], fields?: string[]): Promise<T[]>
-    search_read<T>(model: string, domain?: any, fields?: string[], offset?: number, limit?: number): Promise<T[]>
+    search_read<T>(model: string, domain?: string, fields?: string[], offset?: number, limit?: number): Promise<T[]>
     write(model: string, id: number | number[], data: any): Promise<any>
     unlink(model: string, ids: number[]): Promise<any>
     execute(model: string, method: string, args: any): Promise<any>
@@ -83,7 +83,7 @@ export class JSONRPC implements JRPC {
         return result;
     }
 
-    async count(model: string, domain?: any): Promise<number> {
+    async count(model: string, domain?: string): Promise<number> {
         const [result, error] = await this.Call("object", "execute", [
             this.config.database,
             this.config.uid,
@@ -118,7 +118,7 @@ export class JSONRPC implements JRPC {
         return result;
     }
 
-    async get_id(model: string, domain?: any): Promise<number> {
+    async get_id(model: string, domain?: string): Promise<number> {
         const [result, error] = await this.Call("object", "execute", [
             this.config.database,
             this.config.uid,
@@ -135,7 +135,7 @@ export class JSONRPC implements JRPC {
         return result[0] || -1;
     }
 
-    async search(model: string, domain?: any): Promise<number[]> {
+    async search(model: string, domain?: string): Promise<number[]> {
         const [result, error] = await this.Call("object", "execute", [
             this.config.database,
             this.config.uid,
@@ -172,7 +172,7 @@ export class JSONRPC implements JRPC {
 
     async search_read<T>(
         model: string,
-        domain?: any,
+        domain?: string,
         fields?: string[],
         offset?: number,
         limit?: number
@@ -374,7 +374,7 @@ export class ODOOJSON implements JRPC {
         }
     }
 
-    async count(model: string, domain?: any): Promise<number> {
+    async count(model: string, domain?: string): Promise<number> {
         const url = `${this.config.url}${model}/count`;
 
         try {
@@ -426,7 +426,7 @@ export class ODOOJSON implements JRPC {
         }
     }
 
-    async get_id(model: string, domain?: any): Promise<number> {
+    async get_id(model: string, domain?: string): Promise<number> {
         const url = `${this.config.url}${model}/search`;
 
         try {
@@ -450,7 +450,7 @@ export class ODOOJSON implements JRPC {
         }
     }
 
-    async search(model: string, domain?: any): Promise<number[]> {
+    async search(model: string, domain?: string): Promise<number[]> {
         const url = `${this.config.url}${model}/search`;
 
         try {
@@ -500,7 +500,7 @@ export class ODOOJSON implements JRPC {
 
     async search_read<T>(
         model: string,
-        domain?: any,
+        domain?: string,
         fields?: string[],
         offset?: number,
         limit?: number
@@ -656,7 +656,7 @@ export class JRPCClient {
         return this.strategy.load(model, header, values);
     }
 
-    async count(model: string, domain?: any): Promise<number> {
+    async count(model: string, domain?: string): Promise<number> {
         return this.strategy.count(model, domain);
     }
 
@@ -664,11 +664,11 @@ export class JRPCClient {
         return this.strategy.fields_get(model, fields, field_attributes);
     }
 
-    async get_id(model: string, domain?: any): Promise<number> {
+    async get_id(model: string, domain?: string): Promise<number> {
         return this.strategy.get_id(model, domain);
     }
 
-    async search(model: string, domain?: any): Promise<number[]> {
+    async search(model: string, domain?: string): Promise<number[]> {
         return this.strategy.search(model, domain);
     }
 
@@ -678,7 +678,7 @@ export class JRPCClient {
 
     async search_read<T>(
         model: string,
-        domain?: any,
+        domain?: string,
         fields?: string[],
         offset?: number,
         limit?: number
