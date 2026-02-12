@@ -1,6 +1,6 @@
 {
   "name": "@ppreeper/odoojrpc",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Odoo JSON RPC library for Node.js and browsers",
   "type": "module",
   "main": "./dist/index.js",
